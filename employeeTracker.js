@@ -10,8 +10,18 @@ const connection = mysql.createConnection({
     database: 'employeeDB',
 });
 
+const readEmployeeRole = () => {
+    connection.query(
+        'SELECT role.id, role.title, employee.first_name, employee.last_name, employee.role_id FROM role INNER JOIN employee ON role.id=employee.role_id;',
+        (err, res) => {
+            if (err) throw err;
+            console.table(res);
+            connection.end();
+        })
+}
+
 connection.connect((err) => {
     if (err) throw err;
     console.log(`Connected as id ${connection.threadId}`);
-    connection.end();
+    readEmployeeRole();
 });
