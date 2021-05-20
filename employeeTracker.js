@@ -25,6 +25,7 @@ const askQuestion = () => {
             'Delete a department',
             'Delete a role',
             'Delete an employee',
+            'View employees by manager',
             'Exit',
         ]
     })
@@ -317,7 +318,34 @@ const deleteEmployee = () => {
     })
 }
 
-
+const viewByManager = () => {
+    inquirer.prompt(
+        {
+            name: 'manager',
+            type: 'list',
+            message: 'Which manager would you like to view by?',
+            choices: [
+                'Creative Director',
+                'Manager',
+            ]
+        }
+    ).then((data) => {
+        let managerId
+        if (data.manager === "Creative Director") {
+            managerId = 3;
+        } else if (data.manager === 'Manager') {
+            managerId = 5;
+        }
+        const query = connection.query(
+            `SELECT * FROM employee WHERE manager_id = '${managerId}'`, (err, res) => {
+                if (err) throw err;
+                console.log(`\nShowing employees of ${data.manager}...`)
+                console.table(res);
+                askQuestion();
+            }
+        )
+    })
+}
 
 
 
