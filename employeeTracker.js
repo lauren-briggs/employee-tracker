@@ -21,9 +21,6 @@ const askQuestion = () => {
             'Add a role',
             'Add an employee',
             'View a table',
-            // 'View departments',
-            // 'View roles',
-            // 'View employees',
             'Update an employee',
             'Exit',
         ]
@@ -42,15 +39,6 @@ const askQuestion = () => {
                 case 'View a table':
                     viewTable();
                     break;
-                // case 'View departments':
-                //     viewDepartments();
-                //     break;
-                // case 'View roles':
-                //     viewRoles();
-                //     break;
-                // case 'View employees':
-                //     viewEmployees();
-                //     break;
                 case 'Update an employee':
                     updateEmployee();
                     break;
@@ -124,17 +112,26 @@ const addEmployee = () => {
             choices: [
                 'Web Developer',
                 'Graphic Designer',
-                'Digital Designer',
                 'Creative Director',
-                'Copywriter',
-                'Social Media Manager',
                 'Accountant',
                 'Manager',
             ]
         }
     ]).then((employeeData) => {
+        let roleId
+        if (employeeData.role === 'Web Developer') {
+            roleId = 1;
+        } else if (employeeData.role === 'Graphic Designer') {
+            roleId = 2;
+        } else if (employeeData.role === 'Creative Director') {
+            roleId = 3;
+        } else if (employeeData.role === 'Accountant') {
+            roleId = 4;
+        } else if (employeeData.role === 'Manager') {
+            roleId = 5;
+        };
         const query = connection.query(
-            `INSERT INTO employee (first_name, last_name) VALUES ('${employeeData.firstname}', '${employeeData.lastname}')`, (err, res) => {
+            `INSERT INTO employee (first_name, last_name, role_id) VALUES ('${employeeData.firstname}', '${employeeData.lastname}', '${roleId}')`, (err, res) => {
                 if (err) throw err;
                 console.log(`\nInserting ${employeeData.firstname} ${employeeData.lastname} into employee...`)
                 console.log(`${res.affectedRows} inserted into employee table`);
@@ -165,6 +162,56 @@ const viewTable = () => {
         );
     });
 
+}
+
+const updateEmployee = () => {
+    inquirer.prompt([
+        {
+            name: 'firstname',
+            type: 'input',
+            message: 'What is the employees first name?',
+        },
+        {
+            name: 'lastname',
+            type: 'input',
+            message: 'What is their last name?',
+        },
+        {
+            name: 'role',
+            type: 'rawlist',
+            message: 'What is their new role?',
+            choices: [
+                'Web Developer',
+                'Graphic Designer',
+                'Creative Director',
+                'Accountant',
+                'Manager',
+            ]
+        }
+    ]).then((newRoleData) => {
+        console.log(newRoleData.role)
+        let newRoleId
+        if (newRoleData.role === 'Web Developer') {
+            newRoleId = 1;
+        } else if (newRoleData.role === 'Graphic Designer') {
+            newRoleId = 2;
+        } else if (newRoleData.role === 'Creative Director') {
+            newRoleId = 3;
+        } else if (newRoleData.role === 'Accountant') {
+            newRoleId = 4;
+        } else if (newRoleData.role === 'Manager') {
+            newRoleId = 5;
+        };
+        console.log(newRoleId);
+        const query = connection.query(
+            `UPDATE employee SET role_id = '${newRoleId}' WHERE first_name = '${newRoleData.firstname}' AND last_name = '${newRoleData.lastname}'`, (err, res) => {
+                if (err) throw err;
+                console.log(`\nUpdating ${newRoleData.firstname} ${newRoleData.lastname}'s new role as ${newRoleData.role} into employee...`)
+                console.log(`${res.affectedRows} inserted into employee table`);
+                askQuestion();
+            }
+        )
+    })
 }
 
 connection.connect((err) => {
