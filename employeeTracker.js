@@ -96,10 +96,31 @@ const addRole = () => {
             name: 'salary',
             type: 'input',
             message: 'What is the salary?',
+        },
+        {
+            name: 'department',
+            type: 'list',
+            message: 'which department is this role in?',
+            choices: [
+                'Design',
+                'Developer',
+                'Accounts',
+                'HR',
+            ]
         }
     ]).then((roleData) => {
+        let depId
+        if (roleData.department === 'Design') {
+            depId = 1;
+        } else if (roleData.department === 'Developer') {
+            depId = 2;
+        } else if (roleData.department === 'Accounts') {
+            depId = 3;
+        } else if (roleData.department === 'HR') {
+            depId = 4;
+        }
         const query = connection.query(
-            `INSERT INTO role SET ?`, roleData, (err, res) => {
+            `INSERT INTO role (title, salary, department_id) VALUES ('${roleData.title}', '${roleData.salary}', '${depId}')`, (err, res) => {
                 if (err) throw err;
                 console.log(`\nInserting ${roleData.name} into role...`)
                 console.log(`${res.affectedRows} inserted into role table`);
@@ -246,14 +267,8 @@ const deleteDepartment = () => {
     inquirer.prompt(
         {
             name: 'name',
-            type: 'list',
-            message: 'Which department would you like to delete?',
-            choices: [
-                'Design',
-                'Developer',
-                'Accounts',
-                'HR',
-            ],
+            type: 'input',
+            message: 'What department would you like to delete?',
         }
     ).then((department) => {
         const query = connection.query(
@@ -271,15 +286,8 @@ const deleteRole = () => {
     inquirer.prompt(
         {
             name: 'title',
-            type: 'list',
-            message: 'Which role would you like to delete?',
-            choices: [
-                'Web Developer',
-                'Graphic Designer',
-                'Creative Director',
-                'Accountant',
-                'Manager',
-            ],
+            type: 'input',
+            message: 'What role would you like to delete?',
         }
     ).then((title) => {
         const query = connection.query(
@@ -346,9 +354,6 @@ const viewByManager = () => {
         )
     })
 }
-
-
-
 
 connection.connect((err) => {
     if (err) throw err;
