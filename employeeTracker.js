@@ -22,6 +22,9 @@ const askQuestion = () => {
             'Add an employee',
             'View a table',
             'Update an employee',
+            'Delete a department',
+            'Delete a role',
+            'Delete an employee',
             'Exit',
         ]
     })
@@ -41,6 +44,18 @@ const askQuestion = () => {
                     break;
                 case 'Update an employee':
                     updateEmployee();
+                    break;
+                case 'Delete a department':
+                    deleteDepartment();
+                    break;
+                case 'Delete a role':
+                    deleteRole();
+                    break;
+                case 'Delete an employee':
+                    deleteEmployee();
+                    break;
+                case 'View employees by manager':
+                    viewByManager();
                     break;
                 case 'Exit':
                     connection.end();
@@ -213,6 +228,99 @@ const updateEmployee = () => {
         )
     })
 }
+
+const deleteDepartment = () => {
+    // connection.query(
+    //     `SELECT * FROM department`, (err, res) => {
+    //         if (err) throw err;
+    //         console.log(res);
+    //         let depArr = [];
+    //         for (i = 0; i < res.length; i++) {
+    //             console.log(res[i].name);
+    //             depArr.push(res[i].name);
+    //         }
+    //         console.log(`Department Array: ${depArr}`)
+    //     }
+    // ).then((depArr) => {
+    inquirer.prompt(
+        {
+            name: 'name',
+            type: 'list',
+            message: 'Which department would you like to delete?',
+            choices: [
+                'Design',
+                'Developer',
+                'Accounts',
+                'HR',
+            ],
+        }
+    ).then((department) => {
+        const query = connection.query(
+            `DELETE FROM department WHERE ?`, department, (err, res) => {
+                if (err) throw err;
+                console.log(`\nDeleting ${department.name} from department...`)
+                console.log(`${res.affectedRows} deleted from table`);
+                askQuestion();
+            }
+        )
+    })
+}
+
+const deleteRole = () => {
+    inquirer.prompt(
+        {
+            name: 'title',
+            type: 'list',
+            message: 'Which role would you like to delete?',
+            choices: [
+                'Web Developer',
+                'Graphic Designer',
+                'Creative Director',
+                'Accountant',
+                'Manager',
+            ],
+        }
+    ).then((title) => {
+        const query = connection.query(
+            `DELETE FROM role WHERE ?`, title, (err, res) => {
+                if (err) throw err;
+                console.log(`\nDeleting ${title.title} from role...`)
+                console.log(`${res.affectedRows} deleted from table`);
+                askQuestion();
+            }
+        )
+    })
+}
+
+
+const deleteEmployee = () => {
+    inquirer.prompt([
+        {
+            name: 'first_name',
+            type: 'input',
+            message: 'What is the first name of the employee you would like to delete?',
+        },
+        {
+            name: 'last_name',
+            type: 'input',
+            message: 'What is their last name?',
+        },
+    ]).then((employee) => {
+        const query = connection.query(
+            `DELETE FROM employee WHERE first_name = '${employee.first_name}' AND last_name = '${employee.last_name}'`, (err, res) => {
+                if (err) throw err;
+                console.log(`\nDeleting ${employee.first_name} ${employee.last_name} from employee...`)
+                console.log(`${res.affectedRows} deleted from employee`);
+                askQuestion();
+            }
+        )
+    })
+}
+
+
+
+
+
 
 connection.connect((err) => {
     if (err) throw err;

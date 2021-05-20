@@ -5,7 +5,6 @@ INSERT INTO department (name)
 VALUES 
 ('Design'),
 ('Developer'),
-('Marketing'),
 ('Accounts'),
 ('HR');
 
@@ -14,8 +13,8 @@ VALUES
 ('Web Developer', 90000, 2),
 ('Graphic Designer', 70000, 1),
 ('Creative Director', 40000, 1),
-('Accountant', 100000, 4),
-('Manager', 100000, 5);
+('Accountant', 100000, 3),
+('Manager', 100000, 4);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES 
