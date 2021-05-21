@@ -7,6 +7,7 @@ A command line application that allows users to view and manage the departments,
 Click on the screenshot below to see the video.
 
 [![User demonstration link](Assets/employee-tracker-demo.png)](https://drive.google.com/file/d/11b-kxcnDmpIx_32YOA6dmp9W_nJJVGvW/view)
+[![User demonstration link](Assets/employee-tracker-budget-demo.png)](https://drive.google.com/file/d/1t1DE-WymDG_Hm4TpDaLnQNfpul2JPdkL/view)
 
 ## Functionality
 
@@ -21,6 +22,8 @@ A command-line application that at a minimum allows the user to:
   * View employees by manager
 
   * Delete departments, roles, and employees
+
+  * View the total utilized budget of a department -- ie the combined salaries of all employees in that department
 
 
 ## User Story
