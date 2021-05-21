@@ -26,6 +26,7 @@ const askQuestion = () => {
             'Delete a role',
             'Delete an employee',
             'View employees by manager',
+            'View department budget',
             'Exit',
         ]
     })
@@ -57,6 +58,9 @@ const askQuestion = () => {
                     break;
                 case 'View employees by manager':
                     viewByManager();
+                    break;
+                case 'View department budget':
+                    viewDepartmentBudget();
                     break;
                 case 'Exit':
                     connection.end();
@@ -252,35 +256,36 @@ const updateEmployee = () => {
 }
 
 const deleteDepartment = () => {
-    // connection.query(
-    //     `SELECT * FROM department`, (err, res) => {
-    //         if (err) throw err;
-    //         console.log(res);
-    //         let depArr = [];
-    //         for (i = 0; i < res.length; i++) {
-    //             console.log(res[i].name);
-    //             depArr.push(res[i].name);
-    //         }
-    //         console.log(`Department Array: ${depArr}`)
-    //     }
-    // ).then((depArr) => {
-    inquirer.prompt(
-        {
-            name: 'name',
-            type: 'input',
-            message: 'What department would you like to delete?',
+    connection.query(`SELECT * FROM department`, (err, res) => {
+        if (err) throw err;
+        console.log(res);
+        let depArr = [];
+        for (i = 0; i < res.length; i++) {
+            console.log(res[i].name);
+            depArr.push(res[i].name);
+            console.log(`Department Array: ${depArr}`)
         }
-    ).then((department) => {
-        const query = connection.query(
-            `DELETE FROM department WHERE ?`, department, (err, res) => {
-                if (err) throw err;
-                console.log(`\nDeleting ${department.name} from department...`)
-                console.log(`${res.affectedRows} deleted from table`);
-                askQuestion();
+        inquirer.prompt(
+            {
+                name: 'name',
+                type: 'list',
+                message: 'What department would you like to delete?',
+                choices: depArr,
             }
-        )
-    })
+        ).then((department) => {
+            const query = connection.query(
+                `DELETE FROM department WHERE ?`, department, (err, res) => {
+                    if (err) throw err;
+                    console.log(`\nDeleting ${department.name} from department...`)
+                    console.log(`${res.affectedRows} deleted from table`);
+                    askQuestion();
+                }
+            )
+        })
+    }
+    );
 }
+
 
 const deleteRole = () => {
     inquirer.prompt(
@@ -347,11 +352,39 @@ const viewByManager = () => {
         const query = connection.query(
             `SELECT * FROM employee WHERE manager_id = '${managerId}'`, (err, res) => {
                 if (err) throw err;
-                console.log(`\nShowing employees of ${data.manager}...`)
+                console.log(`------------\nShowing employees of ${data.manager}...\n------------`);
                 console.table(res);
                 askQuestion();
             }
         )
+    })
+}
+
+const viewDepartmentBudget = () => {
+    connection.query(`SELECT * FROM department`, (err, res) => {
+        if (err) throw err;
+        let depArr = [];
+        for (i = 0; i < res.length; i++) {
+            depArr.push({ name: res[i].name, value: res[i].id });
+        }
+        inquirer.prompt({
+            name: 'department',
+            type: 'list',
+            message: 'which department budget would you like to see?',
+            choices: depArr,
+        }).then((data) => {
+            const query = connection.query(
+                `SELECT sum(er.salary), d.name as role_name FROM 
+            (SELECT e.first_name, e.last_name, e.role_id, r.salary FROM employee e INNER JOIN role r ON  e.role_id = r.id) as er
+            JOIN department d ON er.role_id = d.id
+            WHERE er.role_id = ${data.department} GROUP BY role_name;`, (err, res) => {
+                if (err) throw err;
+                console.log(`------------\nShowing budget of ${data.department} department...\n------------`);
+                console.table(res);
+                askQuestion();
+            }
+            )
+        })
     })
 }
 
